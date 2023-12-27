@@ -1,0 +1,7 @@
+path:
+  - docs # 第一个成员必须是docs
+  - 04.更多
+
+data:
+  author:
+    name: qinglan

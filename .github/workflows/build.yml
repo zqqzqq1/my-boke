@@ -1,0 +1,92 @@
+name: Build Deploy
+
+# 在main分支发生push事件时触发。
+on:
+  push:
+    branches:
+      - main
+
+env: # 设置环境变量
+  TZ: Asia/Shanghai # 时区（设置时区可使页面中的`最近更新时间`使用时区时间）
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version: [20.0.0]
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ matrix.node_version }}⚗️
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+          cache: 'npm'
+      
+      - name: Cache Node Modules
+        # 为 step 设置 id，可通过 steps.[id].outputs 获取到该步骤的值
+        id: cache-node-modules
+        # 使用 cache action 进行目录资源缓存
+        uses: actions/cache@v2
+        with:
+          # 对 node_modules 目录进行缓存
+          path: node_modules
+          # 根据字段 node-modules- 与 yarn.lock 的 hash 值作为 key
+          # 当 yarn.lock 内容未发生更改时，key 将不会更改，则命中缓存
+          # 如果使用 npm 作为包管理工具，则是 package-lock.json
+          # key: node-modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ runner.os }}-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      
+        # true代表缓存命中，node_modules没有变化，而''代表没有命中，node_modules发生变化
+      - name: Debug Cache Hit
+        run: echo "${{ steps.cache-node-modules.outputs.cache-hit }}"
+
+      # 查看缓存是否设置成功，输出 node_modules 目录
+      - name: Check Install/Build Cache
+        run: ls -lah node_modules | head -5
+
+      - name: Install Dependencies
+        # 如果命中 key，则直接跳过依赖安装
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Build project
+        run: npm run build
+
+      # - run: |
+      #     npm install
+      #     yarn build
+
+      # - name: Deploy 🚀
+      #   uses: JamesIves/github-pages-deploy-action@v4
+      #   env: # 设置环境变量
+      #     ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }} # toKen私密变量
+      #   with:
+      #     folder: docs/.vuepress/dist
+      #     branch: gh-pages # 部署到的分支
+      
+      # 2、部署到 GitHub Pages
+      # - name: Deploy
+      #   uses: JamesIves/github-pages-deploy-action@v4
+      #   env: # 设置环境变量
+      #     ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }} # toKen私密变量
+      #   with:
+      #     # token: ${{ secrets.ACCESS_TOKEN }}
+      #     # repository-name: 765766546/my-vdoing-publish
+      #     # branch: main
+      #     branch: gh-pages # 部署到的分支
+      #     folder: docs/.vuepress/dist # 把public目录下的文件复制到仓库：765766546/myblog
+
+      # 2、部署到 GitHub Pages
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          # ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          token: ${{ secrets.ACCESS_TOKEN }}
+          repository-name: zqqzqq1/zqqboke
+          branch: main
+          folder: docs/.vuepress/dist
+          #注意这里的 docs/.vuepress/dist 是GitHub action所在的仓库根目录下的 docs/.vuepress/dist，也就是 npm run build 生成静态资源的路径
+          #要把 docs/.vuepress/dist里的文件都复制到仓库：765766546/my-vdoing-publish中部署
