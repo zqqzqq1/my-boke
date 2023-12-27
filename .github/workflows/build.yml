@@ -55,29 +55,6 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # - run: |
-      #     npm install
-      #     yarn build
-
-      # - name: Deploy 🚀
-      #   uses: JamesIves/github-pages-deploy-action@v4
-      #   env: # 设置环境变量
-      #     ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }} # toKen私密变量
-      #   with:
-      #     folder: docs/.vuepress/dist
-      #     branch: gh-pages # 部署到的分支
-      
-      # 2、部署到 GitHub Pages
-      # - name: Deploy
-      #   uses: JamesIves/github-pages-deploy-action@v4
-      #   env: # 设置环境变量
-      #     ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }} # toKen私密变量
-      #   with:
-      #     # token: ${{ secrets.ACCESS_TOKEN }}
-      #     # repository-name: 765766546/my-vdoing-publish
-      #     # branch: main
-      #     branch: gh-pages # 部署到的分支
-      #     folder: docs/.vuepress/dist # 把public目录下的文件复制到仓库：765766546/myblog
 
       # 2、部署到 GitHub Pages
       - name: Deploy
