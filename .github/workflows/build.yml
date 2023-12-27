@@ -65,5 +65,3 @@ jobs:
           repository-name: zqqzqq1/zqqboke
           branch: main
           folder: docs/.vuepress/dist
-          #注意这里的 docs/.vuepress/dist 是GitHub action所在的仓库根目录下的 docs/.vuepress/dist，也就是 npm run build 生成静态资源的路径
-          #要把 docs/.vuepress/dist里的文件都复制到仓库：765766546/my-vdoing-publish中部署
